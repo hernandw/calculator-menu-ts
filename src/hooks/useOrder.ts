@@ -1,8 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { MenuItem, MenuOrder } from "../types";
 
 export default function useOrder() {
-  const [order, setOrder] = useState<MenuOrder[]>([]);
+  const initialOrder = ()=>{
+    const order = localStorage.getItem('order');
+    if(order){
+      return JSON.parse(order)
+    }else{
+      return []
+    }
+  }
+  const [order, setOrder] = useState<MenuOrder[]>(initialOrder);
   const addItem = (item: MenuItem) => {
     const existItem = order.findIndex((orderItem) => orderItem.id === item.id);
     if (existItem >= 0) {
@@ -27,6 +35,9 @@ export default function useOrder() {
       setOrder(updateOrder);
     }
   };
+  useEffect(() => {
+    localStorage.setItem("order", JSON.stringify(order));
+  }, [order]);
 
   return {
     addItem,
